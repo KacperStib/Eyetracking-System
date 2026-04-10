@@ -7,12 +7,15 @@ from utils.ear import eye_aspect_ratio
 from utils.perclos import Perclos
 from utils.logger import Logger
 import time
+import os
 
 logger = Logger()
 
 perclos_calc = Perclos(fps=30, window_sec=5)
 
 EAR_THRESHOLD = 0.25
+
+alarm_triggered = False
 
 while True:
 
@@ -44,7 +47,17 @@ while True:
 
         # Perclos
         perclos_calc.update(eye_closed)
+        perclos_calc.update_alarm()
         perclos = perclos_calc.get_value()
+        # Mruganie jesli alarm
+        if perclos_calc.is_drowsy():
+            if int(time.time() * 2) % 2 == 0:
+                cv2.putText(frame, "DROWSINESS ALERT!",
+                            (100, 200),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            1.5,
+                            (0, 0, 255),
+                            4)
 
         # Rysowanie na wykresie
         for (x, y) in np.concatenate((leftEye, rightEye)):
@@ -59,12 +72,12 @@ while True:
         cv2.putText(frame, f"PERCLOS: {perclos:.2f}", (30, 90),
             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)
 
+        # Logi
+        logger.write_frame(frame)
+        logger.log(time.time(), ear, perclos)
+
     cv2.imshow("Eye Tracking System", frame)
     
-    # Logi
-    logger.write_frame(frame)
-    logger.log(time.time(), ear, perclos)
-
     if cv2.waitKey(1) & 0xFF == 27:
         break
 
