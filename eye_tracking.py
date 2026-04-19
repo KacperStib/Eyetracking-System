@@ -1,20 +1,26 @@
 import cv2
 import numpy as np
+import time
+import os
 
 # Import pomocniczych
 from utils.face_module import get_frame_and_eyes, release_camera
 from utils.ear import eye_aspect_ratio
 from utils.perclos import Perclos
 from utils.logger import Logger
-import time
-import os
+from utils.settings import Settings
 
+# Instancje
 logger = Logger()
+settings = Settings()
 
+# Okna wideo i ustawienia
+cv2.namedWindow("Settings")
+cv2.namedWindow("Eye Tracking System")
+cv2.setMouseCallback("Settings", settings.mouse)
+
+# Perclos
 perclos_calc = Perclos(fps=30, window_sec=5)
-
-EAR_THRESHOLD = 0.25
-
 last_face_time = time.time()
 NO_FACE_RESET_TIME = 5
 
@@ -27,6 +33,24 @@ while True:
         break
 
     status = "No Face"
+
+    # Ustawienia
+    ear_threshold = settings.get_ear()
+    perclos_threshold = settings.get_perclos()
+    window_sec = settings.get_window()
+
+    if perclos_threshold != perclos_calc.threshold:
+        perclos_calc.set_threshold(perclos_threshold)
+
+    if window_sec != perclos_calc.window_sec:
+        perclos_calc.set_window(30, window_sec)
+
+    if settings.consume_reset():
+        perclos_calc.reset()
+        continue
+
+    settings_frame = settings.draw()
+    cv2.imshow("Settings", settings_frame)
 
     # Brak twarzy
     if leftEye is None or rightEye is None:
@@ -54,7 +78,7 @@ while True:
     ear = (leftEAR + rightEAR) / 2.0
 
     # Status otwarcia oczu
-    if ear < EAR_THRESHOLD:
+    if ear < ear_threshold:
         status = "Eye Closed"
         eye_closed = 1
         color = (0, 0, 255)

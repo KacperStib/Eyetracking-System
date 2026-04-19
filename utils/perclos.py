@@ -32,11 +32,13 @@ class Perclos:
 
         return len(self.blinks)
 
+    # Wartosc PERCLOS
     def get_value(self):
         if len(self.buffer) == 0:
             return 0.0
         return sum(self.buffer) / len(self.buffer)
 
+    # Alarm w przypadku przekroczenia progu PERCLOS
     def update_alarm(self):
         perclos = self.get_value()
 
@@ -56,3 +58,21 @@ class Perclos:
 
     def is_drowsy(self):
         return self.alarm_active
+    
+    def set_threshold(self, threshold):
+        self.threshold = threshold
+
+    # Zmiana okna czasowego
+    def set_window(self, fps, window_sec):
+        self.fps = fps
+        self.window_sec = window_sec
+        self.maxlen = fps * window_sec
+        self.buffer = deque(maxlen=self.maxlen)
+        self.blinks = deque()
+
+    # Reset przy nacisnieciu RESET
+    def reset(self):
+        self.buffer.clear()
+        self.blinks.clear()
+        self.alarm_active = False
+        self.prev_closed = 0
