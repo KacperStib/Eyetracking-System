@@ -10,6 +10,7 @@ class Settings:
 
         self.dragging = None  # sldier dragger
         self.reset_clicked = False
+        self.calib_clicked = False
 
     # Reset parametrow
     def reset(self):
@@ -27,13 +28,16 @@ class Settings:
         self.draw_slider(frame, "WINDOW", 1, 60, self.window, 150)
 
         # Reset btn
-        self.reset_rect = (100, 180, 250, 220)
-        x1, y1, x2, y2 = self.reset_rect
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-        cv2.putText(frame, "RESET", (130, 210),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        self.reset_rect = (50, 200, 250, 250)
+        cv2.rectangle(frame, (50, 200), (250, 250), (0, 0, 255), 2)
+        cv2.putText(frame, "RESET", (110, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+        
+        # Calibration btn
+        self.calib_rect = (300, 200, 550, 250)
+        cv2.rectangle(frame, (300, 200), (550, 250), (0, 255, 0), 2)
+        cv2.putText(frame, "CALIBRATE", (360, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
         return frame
-
+        
     def draw_slider(self, frame, name, min_val, max_val, value, y):
         x1, x2 = 50, 300
 
@@ -55,10 +59,16 @@ class Settings:
 
         if event == cv2.EVENT_LBUTTONDOWN:
 
+            # Obsługa przycisku CALIBRATE
+            cx1, cy1, cx2, cy2 = self.calib_rect
+            if cx1 <= x <= cx2 and cy1 <= y <= cy2:
+                self.calib_clicked = True #
+                return
+
             # RGuzik reset
             x1, y1, x2, y2 = self.reset_rect
             if x1 <= x <= x2 and y1 <= y <= y2:
-                self.reset()
+                #self.reset()
                 self.reset_clicked = True
                 return
 
@@ -90,6 +100,13 @@ class Settings:
     def consume_reset(self):
         if self.reset_clicked:
             self.reset_clicked = False
+            return True
+        return False
+
+    #Przeprowadz kalibracje w main
+    def consume_calibrate(self):
+        if hasattr(self, 'calib_clicked') and self.calib_clicked:
+            self.calib_clicked = False
             return True
         return False
 

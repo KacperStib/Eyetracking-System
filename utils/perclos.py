@@ -3,55 +3,58 @@ import time
 import subprocess
 
 class Perclos:
-    def __init__(self, fps=30, window_sec=60, threshold=0.4):
+    def __init__(self, window_sec=60, threshold=0.4):
         # Przesuwajace sie okno czasowe
-        self.buffer = deque(maxlen=fps * window_sec)            
+        self.buffer = deque()            
         self.threshold = threshold
         self.alarm_active = False
         self.window_sec = window_sec
+        self.last_beep_time = 0
         # Licznik mrugniec
         self.blinks = deque() 
         self.prev_closed = 0
 
     def update(self, eye_closed):
         # eye_closed: 1 lub 0
-        self.buffer.append(eye_closed)
+        now = time.time()
+        self.buffer.append((now, eye_closed))
 
         # wykrycie mrugnięcia
         if eye_closed == 1 and self.prev_closed == 0:
             self.blinks.append(time.time())
-
         self.prev_closed = eye_closed
 
-    def get_blinks(self):
-        current_time = time.time()
-
-        # usuwamy stare mrugnięcia poza oknem
-        while self.blinks and (current_time - self.blinks[0] > self.window_sec):
+        # Wyczysc z bufora starsze mrugniecia niz okno
+        while self.buffer and self.buffer[0][0] < now - self.window_sec:
+            self.buffer.popleft()
+        while self.blinks and self.blinks[0] < now - self.window_sec:
             self.blinks.popleft()
 
+    def get_blinks(self):
         return len(self.blinks)
 
     # Wartosc PERCLOS
     def get_value(self):
         if len(self.buffer) == 0:
             return 0.0
-        return sum(self.buffer) / len(self.buffer)
+        closed_frames = sum(state for timestamp, state in self.buffer)
+        return closed_frames / len(self.buffer)
 
     # Alarm w przypadku przekroczenia progu PERCLOS
     def update_alarm(self):
         perclos = self.get_value()
-
+        now = time.time()
         if perclos > self.threshold:
             if not self.alarm_active:
                 self.alarm_active = True
                 self.last_alarm_time = time.time()
-
                 # Beep
-                subprocess.Popen([
-                    "paplay",
-                    "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-                ])
+                if now - self.last_beep_time > 2.0:
+                    subprocess.Popen([
+                        "paplay",
+                        "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+                    ])
+                    self.last_beep_time = now
 
         else:
             self.alarm_active = False

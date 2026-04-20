@@ -10,23 +10,35 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
 
 def get_frame_and_eyes():
+
+    # Zabezpiecznie przed brakiem kamery
+    if not cap.isOpened():
+        print("Błąd: Kamera nie jest dostępna.")
+        return None, None, None
+
     ret, frame = cap.read()
     if not ret:
         return None, None, None
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
+    # Zabezpiecznie przed brakiem dlib
+    try:
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = detector(gray)
 
-    leftEye = None
-    rightEye = None
+        leftEye = None
+        rightEye = None
 
-    for face in faces:
-        shape = predictor(gray, face)
-        shape = face_utils.shape_to_np(shape)
+        for face in faces:
+            shape = predictor(gray, face)
+            shape = face_utils.shape_to_np(shape)
 
-        # Punkty z dlib odpowiadajace za oczy
-        leftEye = shape[36:42]
-        rightEye = shape[42:48]
+            # Punkty z dlib odpowiadajace za oczy
+            leftEye = shape[36:42]
+            rightEye = shape[42:48]
+
+    except Exception as e:
+        print(f"Błąd przetwarzania obrazu: {e}")
+        return frame, None, None
 
     return frame, leftEye, rightEye
 
