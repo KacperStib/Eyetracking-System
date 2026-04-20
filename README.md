@@ -17,38 +17,38 @@ System wizyjnej analizy stanu kierowcy, wykrywający oznaki zmęczenia na podsta
 - Kamera (wbudowana lub USB, obsługa HD)
 - Linux (Ubuntu) / Windows
 
-## Instalacja
+# Instalacja
 
-# Utworzenie środowiska wirtualnego
+## Utworzenie środowiska wirtualnego
 python3 -m venv venv
 
-# Aktywacja (Linux / macOS)
+## Aktywacja (Linux / macOS)
 source venv/bin/activate
 
-# Aktywacja (Windows)
-# venv\Scripts\activate
+## Aktywacja (Windows)
+venv\Scripts\activate
 
-# Instalacja zależności
+## Instalacja zależności
 pip install -r requirements.txt
 
-## Instrukcja Obsługi
+# Instrukcja Obsługi
 
-# Uruchomienie
+## Uruchomienie
 python3 eye_tracking.py
 
-# Kalibracja
+## Kalibracja
 Po uruchomieniu kliknij przycisk CALIBRATE w oknie "Settings". Patrz prosto w kamerę przez kilka sekund (staraj się nie mrugać intensywnie w trakcie postępu). System automatycznie wyliczy optymalny próg EAR i zaktualizuje suwak.
 
-# Alarm 
+## Alarm 
 Gdy parametr PERCLOS przekroczy ustawiony próg, system wygeneruje sygnał dźwiękowy oraz wyświetli czerwony alert na ekranie.
 
-# Ustawienia: 
+## Ustawienia: 
 Za pomocą suwaków w oknie "Settings" możesz ręcznie modyfikować parametry w czasie rzeczywistym.
 
-# Wyjście 
+## Wyjście 
 Naciśnij klawisz ESC w oknie wideo, aby bezpiecznie zamknąć aplikację i zapisać logi.
 
-## Struktura Projektu
+# Struktura Projektu
 
 - eye_tracking.py - Główny skrypt uruchomieniowy.
 - utils/ear.py - Klasa EARManager (obliczenia i kalibracja).
