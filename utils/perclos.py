@@ -1,6 +1,7 @@
 from collections import deque
 import time
 import subprocess
+import platform
 
 class Perclos:
     def __init__(self, window_sec=60, threshold=0.4):
@@ -50,11 +51,23 @@ class Perclos:
                 self.last_alarm_time = time.time()
                 # Beep
                 if now - self.last_beep_time > 2.0:
-                    subprocess.Popen([
-                        "paplay",
-                        "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-                    ])
-                    self.last_beep_time = now
+                    current_os = platform.system()
+                
+                if current_os == "Linux":
+                    try:
+                        subprocess.Popen([
+                            "paplay",
+                            "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+                        ])
+                    except:
+                        pass
+                
+                elif current_os == "Windows":
+                    try:
+                        import winsound
+                        winsound.Beep(1000, 500) 
+                    except:
+                        pass
 
         else:
             self.alarm_active = False
