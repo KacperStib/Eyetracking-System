@@ -1,4 +1,4 @@
-# Driver Monitoring System – Drowsiness Detection
+# Eyetracking System – Drowsiness Detection
 
 System wizyjnej analizy stanu kierowcy, wykrywający oznaki zmęczenia na podstawie parametrów EAR (Eye Aspect Ratio) i PERCLOS (Percentage of Eye Closure).
 
@@ -6,7 +6,7 @@ System wizyjnej analizy stanu kierowcy, wykrywający oznaki zmęczenia na podsta
 
 - Detekcja twarzy i oczu z wykorzystaniem `dlib` oraz 68-punktowego modelu landmarków
 - Dynamiczna kalibracja progu EAR przez interfejs użytkownika
-- Obliczanie PERCLOS w przesuwnym oknie czasowym (niezależne od zmiennego FPS)
+- Obliczanie PERCLOS w przesuwnym oknie czasowym
 - Nakładka OSD (On-Screen Display) z danymi w czasie rzeczywistym
 - Wykres PERCLOS z progiem alarmowym i osią czasu
 - Logowanie danych: zapis sekwencji wideo (`.avi`) i statystyk (`.csv`) do katalogu `logs/`
@@ -14,8 +14,8 @@ System wizyjnej analizy stanu kierowcy, wykrywający oznaki zmęczenia na podsta
 ## Wymagania
 
 - Python 3.10.12 (zalecany)
-- Kamera (wbudowana lub USB, obsługa HD)
-- Linux (Ubuntu) / Windows
+- Kamera (wbudowana lub USB)
+- Dobre oświetlenie
 
 # Instalacja
 
@@ -28,7 +28,7 @@ source venv/bin/activate
 ## Aktywacja (Windows)
 venv\Scripts\activate
 
-## Instalacja zależności
+## Instalacja zależności (należy odczekać dłuższą chwilę ok. 10 min)
 pip install -r requirements.txt
 
 # Instrukcja Obsługi
@@ -37,16 +37,19 @@ pip install -r requirements.txt
 python3 eye_tracking.py
 
 ## Kalibracja
-Po uruchomieniu kliknij przycisk CALIBRATE w oknie "Settings". Patrz prosto w kamerę przez kilka sekund (staraj się nie mrugać intensywnie w trakcie postępu). System automatycznie wyliczy optymalny próg EAR i zaktualizuje suwak.
+Aplikacja umożliwia kalibrację progu EAR pod streukturę oka. Po uruchomieniu można wybrać przycisk "CALIBRATE" w oknie "Settings". System automatycznie wyliczy optymalny próg EAR, po kilku sekundach patrzenia na wprost kamery (należy unikać mrugania).
 
 ## Alarm 
 Gdy parametr PERCLOS przekroczy ustawiony próg, system wygeneruje sygnał dźwiękowy oraz wyświetli czerwony alert na ekranie.
 
 ## Ustawienia: 
-Za pomocą suwaków w oknie "Settings" możesz ręcznie modyfikować parametry w czasie rzeczywistym.
+Za pomocą suwaków w oknie "Settings" można ręcznie modyfikować parametry w czasie rzeczywistym.
+
+## Reset
+Za pomocą przycisku "RESET" można wyzerować w oknie czasowym mrugnięcia i zliczony PERCLOS.
 
 ## Wyjście 
-Naciśnij klawisz ESC w oknie wideo, aby bezpiecznie zamknąć aplikację i zapisać logi.
+Należy nacisnąć klawisz ESC w oknie wideo, aby bezpiecznie zamknąć aplikację i zapisać logi.
 
 # Struktura Projektu
 
