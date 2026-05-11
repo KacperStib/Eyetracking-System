@@ -14,7 +14,7 @@ class Perclos:
         # Licznik mrugniec
         self.blinks = deque() 
         self.prev_closed = 0
-
+        
     def update(self, eye_closed):
         # eye_closed: 1 lub 0
         now = time.time()
@@ -44,15 +44,17 @@ class Perclos:
     # Alarm w przypadku przekroczenia progu PERCLOS
     def update_alarm(self):
         perclos = self.get_value()
+        current_os = platform.system()
         now = time.time()
+        
         if perclos > self.threshold:
-            if not self.alarm_active:
-                self.alarm_active = True
+            self.alarm_active = True
+            #if not self.alarm_active:
+            if now - self.last_beep_time > 2.0:
+                self.last_beep_time = now  
                 self.last_alarm_time = time.time()
+
                 # Beep
-                if now - self.last_beep_time > 2.0:
-                    current_os = platform.system()
-                
                 if current_os == "Linux":
                     try:
                         subprocess.Popen([
@@ -61,14 +63,14 @@ class Perclos:
                         ])
                     except:
                         pass
-                
+                    
                 elif current_os == "Windows":
                     try:
                         import winsound
                         winsound.Beep(1000, 500) 
                     except:
                         pass
-
+                
         else:
             self.alarm_active = False
 

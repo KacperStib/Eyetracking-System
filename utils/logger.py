@@ -3,6 +3,7 @@ import cv2
 import time
 import numpy as np
 import collections
+import os
 
 class Logger:
     def __init__(self,
@@ -16,6 +17,9 @@ class Logger:
         self.height = height
         self.start_time = time.time()
 
+        # Sciezka 
+        os.makedirs(os.path.dirname(csv_file), exist_ok=True)
+        
         # .csv
         self.file = open(csv_file, mode='w', newline='')
         self.writer = csv.writer(self.file)

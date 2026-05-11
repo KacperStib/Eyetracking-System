@@ -1,13 +1,15 @@
 import cv2
 import dlib
 from imutils import face_utils
+import sys
 
 # Dlib - detector twarzy i predictor punktow twarzy
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # kamera
-cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
+backend = cv2.CAP_DSHOW if sys.platform == "win32" else cv2.CAP_V4L2
+cap = cv2.VideoCapture(0, backend)
 
 def get_frame_and_eyes():
 
